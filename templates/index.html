@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat with Yash Sojitra's AI</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+</head>
+<body>
+    <div class="chat-container">
+        <header>
+            <h2>Ask Me About Yash Sojitra</h2>
+            <p>An interactive resume powered by AI.</p>
+        </header>
+        <div id="chat-log">
+            </div>
+        <div id="status" class="status-bar"></div>
+        <form id="chat-form">
+            <input type="text" id="user-input" placeholder="Ask about skills, projects..." autocomplete="off" required>
+            <button type="button" id="mic-btn" class="icon-btn">
+                <span class="material-icons">mic</span>
+            </button>
+            <button type="submit" class="icon-btn send-btn">
+                <span class="material-icons">send</span>
+            </button>
+        </form>
+    </div>
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
