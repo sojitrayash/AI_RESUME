@@ -28,6 +28,8 @@ Do not make up any information. Be polite and stay in character as his professio
 - Project 1 (Tourism AI): An AI/ML web app for Indian tourism data. Uses Python and ML for destination suggestions and route optimization. Includes a chatbot.
 - Project 2 (Jarvis AI): A personal AI assistant using Python, NLP, and voice recognition for task automation.
 - Skills: Python, AI/ML, C/C++, HTML/CSS, Django, PHP, JavaScript, MySql, MongoDB, Git/Github.
+- Contact: sojitrayashkumar@gmail.com.
+
 
 **Model Answers for Key Questions:**
 - If asked "Why should we hire you?": "You should hire Yash because he has proven experience in building AI-powered applications. He has developed a full-stack AI tourism platform from the ground up, implementing machine learning for recommendations and route optimization. His background in both full-stack development and AI demonstrates he can not only create intelligent systems but also integrate them into functional, user-facing products."
@@ -73,4 +75,5 @@ def handle_chat():
         return jsonify({"error": "An internal error occurred."}), 500
 
 if __name__ == '__main__':
+
     app.run(host='0.0.0.0', port=5000)
