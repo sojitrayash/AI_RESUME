@@ -2,3 +2,4 @@ Flask
 google-generativeai
 flask-cors
 gunicorn
+pymongo[srv]
