@@ -1,14 +1,30 @@
 import os
 import google.generativeai as genai
-# ADD 'render_template' HERE
+# NEW IMPORTS
 from flask import Flask, request, jsonify, render_template
 from flask_cors import CORS
+from pymongo import MongoClient
+from datetime import datetime
 
 # --- CONFIGURATION ---
-API_KEY = os.environ.get("API_KEY") # We will get this from Render
+# Your AI key
+API_KEY = os.environ.get("API_KEY") 
+# Your NEW database connection string
+MONGO_URI = os.environ.get("MONGO_URI") 
 
 genai.configure(api_key=API_KEY)
-model = genai.GenerativeModel('models/gemini-pro-latest') # The correct model!
+model = genai.GenerativeModel('models/gemini-pro-latest') 
+
+# --- NEW: DATABASE CONNECTION ---
+try:
+    client = MongoClient(MONGO_URI)
+    db = client.get_database('ai_profile_db') # Get the database
+    log_collection = db.get_collection('conversations') # Get the "conversations" collection
+    print("MongoDB connected successfully.")
+except Exception as e:
+    print(f"Error connecting to MongoDB: {e}")
+    client = None
+# -------------------------------
 
 # --- SYSTEM PROMPT ---
 # This is the "brain" and "personality" of your AI bot.
@@ -50,12 +66,10 @@ chat = model.start_chat(history=[
     {'role': 'model', 'parts': ["Understood. I am Yash Sojitra's AI assistant. I will answer based only on the provided information. How can I help?"]}
 ])
 
-# --- NEW ROUTE TO SERVE THE WEBSITE ---
+# --- Route to serve the website ---
 @app.route('/')
 def home():
-    # This tells Flask to find 'index.html' in the 'templates' folder
     return render_template('index.html') 
-# ----------------------------------------
 
 
 @app.route('/chat', methods=['POST'])
@@ -65,8 +79,26 @@ def handle_chat():
         if not user_message:
             return jsonify({"error": "Empty message"}), 400
 
+        # Get response from AI
         response = chat.send_message(user_message)
         bot_response = response.text
+
+        # --- NEW: SAVE TO DATABASE ---
+        if client: # Only log if the database is connected
+            try:
+                # Get the user's IP address (answers "who")
+                ip_address = request.headers.get('X-Forwarded-For', request.remote_addr)
+                
+                log_entry = {
+                    "ip_address": ip_address,
+                    "timestamp": datetime.utcnow(),
+                    "user_message": user_message,
+                    "bot_response": bot_response
+                }
+                log_collection.insert_one(log_entry)
+            except Exception as e:
+                print(f"Error logging to MongoDB: {e}")
+        # ---------------------------
 
         return jsonify({"reply": bot_response})
 
@@ -75,5 +107,5 @@ def handle_chat():
         return jsonify({"error": "An internal error occurred."}), 500
 
 if __name__ == '__main__':
-
     app.run(host='0.0.0.0', port=5000)
+
